@@ -90,29 +90,6 @@ class BurgerBuilder extends Component {
     }
 
     purchaseContinueHandler = () => {
-        //alert('You continue!');
-        // to .json t  kanw logo firebase
-        // this.setState({loading: true});
-        // const order = {
-        //     ingredients: this.state.ingredients,
-        //     price:this.state.totalPrice,
-        //     customer: {
-        //         name: 'theo bez',
-        //         address:{ 
-        //             street:'teststreet',
-        //             country: 'greece'
-        //         },
-        //         email: 'test@test.com'
-        //     },
-        //     delivertMethod: 'fast'
-        // }        
-        // axios.post('/orders.json', order)
-        //     .then(response => {
-        //         this.setState({loading: false, purchasing: false})
-        //     })
-        //     .catch(error =>{
-        //         this.setState({loading: false, purchasing: false});
-        //     });
 
 
         // autot  kanw gia na perasw to ingredients 
@@ -120,6 +97,9 @@ class BurgerBuilder extends Component {
         for (let i in this.state.ingredients){
             queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
         }
+
+        //gia na perasw t totel price st checkout
+        queryParams.push('price=' + this.state.totalPrice);
 
         //pernane st URL
         const queryString = queryParams.join('&');

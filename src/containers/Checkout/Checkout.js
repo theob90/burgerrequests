@@ -2,27 +2,35 @@ import React, { Component } from 'react';
 import CheckoutSummary from './CheckoutSummary/CheckoutSummary';
 import  {Route} from 'react-router-dom';
 import ContactData from './ContactData/ContactData';
+// import axios from '../../axios-orders';
+
+
 
 class Checkout extends Component{
     
     state ={
-        ingredients: {
-            salad:1,
-            meat: 1,
-            cheese:1,
-            bacon:1
+        ingredients: null,
+        price:0
 
-        }
+        
     }
 
-    componentDidMount(){
+    componentWillMount () {
         const query = new URLSearchParams(this.props.location.search);
         const ingredients ={};
-        for (let param of query.entries()){
-            ingredients[param[0]] = +param[1] // to + to kanei convert se noumer
+        let price = 0;
+        for ( let param of query.entries() ){
+            if(param[0] === 'price'){
+                price = param[1];
+            }
+            else {
+                ingredients[param[0]] = +param[1]; // to + to kanei convert se noumer
+
+            }
         }
-        this.setState({ingredients: ingredients})
+        this.setState({ingredients: ingredients, totalPrice: price })
     }
+
 
     // epeidi exoume Router apo to app 
     //mporw na xrisimopoiisw to history
@@ -42,7 +50,11 @@ class Checkout extends Component{
                 <CheckoutSummary ingredients={this.state.ingredients}
                 checkoutCanceled={this.checkoutCanceledHandler}
                 checkoutContinue={this.checkoutContinueHandler}/>
-                <Route path={this.props.match.path + '/contact-data'} component={ContactData} />
+                <Route path={this.props.match.path + '/contact-data'}
+                // thelw na perasw ta ingredients st contactData
+
+                //vazw props gia na mporesei na leitourgisei st histori st contact data
+                render ={(props) => (<ContactData ingredients={this.state.ingredients} price= {this.totalPrice} {...props}/>)} />
             </div>
         );
     }
