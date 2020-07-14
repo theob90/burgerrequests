@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import axios from '../../axios-orders';
+
 import Aux from '../../hoc/_Aux/_Aux';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
@@ -7,6 +7,7 @@ import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
+import axios from '../../axios-orders';
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -30,16 +31,17 @@ class BurgerBuilder extends Component {
     }
 
     componentDidMount () {
-        axios.get('https://react-my-burger-95999.firebaseio.com/ingredients.json')
-        .then(response => {
-            this.setState({ingredients: response.data})
-        })
-        .catch(error => {
-            this.setState({error: true})
-        });
+        console.log(this.props);
+        axios.get( 'https://react-my-burger-95999.firebaseio.com/ingredients.json' )
+            .then( response => {
+                this.setState( { ingredients: response.data } );
+            } )
+            .catch( error => {
+                this.setState( { error: true } );
+            } );
     }
 
-    updatePurchaseState (ingredients) {
+    updatePurchaseState ( ingredients ) {
         const sum = Object.keys( ingredients )
             .map( igKey => {
                 return ingredients[igKey];
@@ -61,7 +63,7 @@ class BurgerBuilder extends Component {
         const oldPrice = this.state.totalPrice;
         const newPrice = oldPrice + priceAddition;
         this.setState( { totalPrice: newPrice, ingredients: updatedIngredients } );
-        this.updatePurchaseState(updatedIngredients);
+        this.updatePurchaseState( updatedIngredients );
     }
 
     removeIngredientHandler = ( type ) => {
@@ -78,39 +80,35 @@ class BurgerBuilder extends Component {
         const oldPrice = this.state.totalPrice;
         const newPrice = oldPrice - priceDeduction;
         this.setState( { totalPrice: newPrice, ingredients: updatedIngredients } );
-        this.updatePurchaseState(updatedIngredients);
+        this.updatePurchaseState( updatedIngredients );
     }
 
     purchaseHandler = () => {
-        this.setState({purchasing: true});
+        this.setState( { purchasing: true } );
     }
 
     purchaseCancelHandler = () => {
-        this.setState({purchasing: false});
+        this.setState( { purchasing: false } );
     }
 
     purchaseContinueHandler = () => {
+        // alert('You continue!');
+        
+        //pernaw ta dedomena sti selida checkout
+     
+        const queryParams = [];
+        for (let i in this.state.ingredients) {
 
-
-        // autot  kanw gia na perasw to ingredients 
-        const queryParams =[];
-        for (let i in this.state.ingredients){
             queryParams.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]));
         }
-
-        //gia na perasw t totel price st checkout
+        //gia na perasw t price st checkout data mazi me t 
+        //ingredients
         queryParams.push('price=' + this.state.totalPrice);
-
-        //pernane st URL
         const queryString = queryParams.join('&');
-
-         //t push mas paei st selida checkout   
         this.props.history.push({
-            pathname:'/checkout',
+            pathname: '/checkout',
             search: '?' + queryString
         });
-
-
     }
 
     render () {
@@ -121,12 +119,9 @@ class BurgerBuilder extends Component {
             disabledInfo[key] = disabledInfo[key] <= 0
         }
         let orderSummary = null;
+        let burger = this.state.error ? <p>Ingredients can't be loaded!</p> : <Spinner />;
 
-        // auto t kanw gia ti tha vgalei error otan paei na fortwsei t ingredient
-        // vazw spinner etsi wste na perimenei na ginei t get kai na mi vgalei error
-        let burger = this.state.error ? <p>ingredients can not be loaded</p> : <Spinner />;
-
-        if ( this.state.ingredients ){
+        if ( this.state.ingredients ) {
             burger = (
                 <Aux>
                     <Burger ingredients={this.state.ingredients} />
@@ -139,28 +134,25 @@ class BurgerBuilder extends Component {
                         price={this.state.totalPrice} />
                 </Aux>
             );
-            orderSummary = <OrderSummary 
+            orderSummary = <OrderSummary
                 ingredients={this.state.ingredients}
                 price={this.state.totalPrice}
                 purchaseCancelled={this.purchaseCancelHandler}
                 purchaseContinued={this.purchaseContinueHandler} />;
-        }   
-        if(this.state.loading){
-            orderSummary = <Spinner/>;
         }
-
-        
+        if ( this.state.loading ) {
+            orderSummary = <Spinner />;
+        }
         // {salad: true, meat: false, ...}
         return (
             <Aux>
                 <Modal show={this.state.purchasing} modalClosed={this.purchaseCancelHandler}>
-                {/* //    tha vgazei to loading an exei perasei apo ton elenxo pou kanoume apo panw */}
                     {orderSummary}
-                    </Modal>
-                    {burger}
+                </Modal>
+                {burger}
             </Aux>
         );
     }
 }
 
-export default withErrorHandler(BurgerBuilder,axios);
+export default withErrorHandler( BurgerBuilder, axios );

@@ -1,64 +1,61 @@
 import React, { Component } from 'react';
-import CheckoutSummary from './CheckoutSummary/CheckoutSummary';
-import  {Route} from 'react-router-dom';
+import { Route } from 'react-router-dom';
+
+import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSummary';
 import ContactData from './ContactData/ContactData';
-// import axios from '../../axios-orders';
 
-
-
-class Checkout extends Component{
-    
-    state ={
+class Checkout extends Component {
+    state = {
         ingredients: null,
-        price:0
-
-        
+        price: 0
     }
 
     componentWillMount () {
-        const query = new URLSearchParams(this.props.location.search);
-        const ingredients ={};
+        const query = new URLSearchParams( this.props.location.search );
+        const ingredients = {};
         let price = 0;
-        for ( let param of query.entries() ){
-            if(param[0] === 'price'){
+        for ( let param of query.entries() ) {
+            // ['salad', '1']
+            if (param[0] === 'price') {
                 price = param[1];
-            }
-            else {
-                ingredients[param[0]] = +param[1]; // to + to kanei convert se noumer
-
+            } else {
+                ingredients[param[0]] = +param[1];
             }
         }
-        this.setState({ingredients: ingredients, totalPrice: price })
+        this.setState( { ingredients: ingredients, totalPrice: price } );
     }
 
-
-    // epeidi exoume Router apo to app 
-    //mporw na xrisimopoiisw to history
-
-    checkoutCanceledHandler = () => {
-
+    checkoutCancelledHandler = () => {
         this.props.history.goBack();
     }
 
-    checkoutContinueHandler = () => {
-        this.props.history.replace('/checkout/contact-data');
+    checkoutContinuedHandler = () => {
+        this.props.history.replace( '/checkout/contact-data' );
     }
 
-    render() {
-        return(
+    render () {
+        return (
             <div>
-                <CheckoutSummary ingredients={this.state.ingredients}
-                checkoutCanceled={this.checkoutCanceledHandler}
-                checkoutContinue={this.checkoutContinueHandler}/>
-                <Route path={this.props.match.path + '/contact-data'}
-                // thelw na perasw ta ingredients st contactData
-
-                //vazw props gia na mporesei na leitourgisei st histori st contact data
-                render ={(props) => (<ContactData ingredients={this.state.ingredients} price= {this.totalPrice} {...props}/>)} />
+                <CheckoutSummary
+                    ingredients={this.state.ingredients}
+                    checkoutCancelled={this.checkoutCancelledHandler}
+                    checkoutContinued={this.checkoutContinuedHandler} />
+              
+                {/* //tou deixnw apo pou tha ferei data me to Route */}
+                <Route 
+                    path={this.props.match.path + '/contact-data'} 
+                    //thelw n perasw ta ingredients st contact data
+                    //epeid kanw render manual, mporw na perasw props, gia ingredients
+                    
+                    
+                    
+                    //to props to kanw gia na ta perasw st contactdata
+                    //kai ara tha mporw n xrisimopoisw t push st contact data
+                    
+                    render={(props) => (<ContactData ingredients={this.state.ingredients} price={this.state.totalPrice} {...props} />)} />
             </div>
         );
     }
 }
-
 
 export default Checkout;
