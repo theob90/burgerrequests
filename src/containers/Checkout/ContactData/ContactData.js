@@ -67,9 +67,15 @@ class ContactData extends Component {
         //einai gia na mi steilei mono t request otan kanw reload t selida
         event.preventDefault();
         this.setState( { loading: true } );
+        //thelw n parw t data apo t state
+        const formData = {};
+        for (let formElementIdentifier in this.state.orderForm){
+            formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
+        }
         const order = {
             ingredients: this.props.ingredients,
-            price: this.props.price
+            price: this.props.price,
+            orderData: formData
         }   
         axios.post( '/orders.json', order )
             .then( response => {
@@ -79,6 +85,24 @@ class ContactData extends Component {
             .catch( error => {
                 this.setState( { loading: false } );
             } );
+    }
+
+    // identifier einai gia na pernei to swsto object apo to state
+    //kai n t akllazei
+    inputChangedHandler = (event, inputIdentifier) => {
+        // console.log(event.target.value);
+        const updatedOrderForm = {
+            //kanw clone to pinaka , alla de ginontai to nested objects clone
+            //alla ginete o poionter
+            ...this.state.orderForm
+        };
+        //kanw clone kai t nested
+        const updatedFormElement = {
+            ...updatedOrderForm[inputIdentifier]
+        };
+        updatedFormElement.value = event.target.value;
+        updatedOrderForm[inputIdentifier] = updatedFormElement;
+        this.setState({orderForm: updatedOrderForm});
     }
 
     render () {
@@ -91,18 +115,20 @@ class ContactData extends Component {
             });
         }
         let form = (
-            <form>
+            <form onSubmit={this.orderHandler}>
                 {formElementArray.map(formElement=> (
                     <Input 
                     key={formElement.id}
                     elementType={formElement.config.elementType}
                     elementConfig={formElement.config.elementConfig}
-                    value={formElement.config.value}/> 
-
+                    value={formElement.config.value}
+                    changed ={(event) => this.inputChangedHandler(event,formElement.id)}/> 
+                    // to kanw anonymous funct gia na mporesw na perasw arguments st inputChanged
+                    //opou id == zipcode street klp
                     // to config to pairnei apo t loop epanw gia na perasei ta stoixeio apo to state
                 ))}
                 
-                <Button btnType="Success" clicked={this.orderHandler}>ORDER</Button>
+                <Button btnType="Success" >ORDER</Button>
             </form>
         );
         if ( this.state.loading ) {

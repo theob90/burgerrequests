@@ -14,8 +14,14 @@ class Orders extends Component {
         axios.get('/orders.json')
             .then(res => {
                 const fetchedOrders = [];
+                //epeidi pairnw object..prepei n at kanw array
+                //res.data einai t object
                 for (let key in res.data) {
                     fetchedOrders.push({
+
+                        //ftiaxnw kainourio object st opoio pernaei auta pou eixe
+                        //to object 
+                        //(kanw distribute)
                         ...res.data[key],
                         id: key
                     });

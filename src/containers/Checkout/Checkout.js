@@ -47,12 +47,12 @@ class Checkout extends Component {
                     //thelw n perasw ta ingredients st contact data
                     //epeid kanw render manual, mporw na perasw props, gia ingredients
                     
-                    
-                    
                     //to props to kanw gia na ta perasw st contactdata
                     //kai ara tha mporw n xrisimopoisw t push st contact data
                     
                     render={(props) => (<ContactData ingredients={this.state.ingredients} price={this.state.totalPrice} {...props} />)} />
+           
+
             </div>
         );
     }
