@@ -5,6 +5,7 @@ import Spinner from '../../../components/UI/Spinner/Spinner';
 import classes from './ContactData.css';
 import axios from '../../../axios-orders';
 import Input from '../../../components/UI/Input/Input';
+import button from '../../../components/UI/Button/Button';
 class ContactData extends Component {
     state = {
         orderForm:{
@@ -18,7 +19,8 @@ class ContactData extends Component {
                         validation: {
                             required: true
                         },
-                        valid:false
+                        valid:false,
+                        touched: false
                     },
                     street: {
                         elementType:'input',
@@ -30,7 +32,8 @@ class ContactData extends Component {
                         validation: {
                             required: true
                         },
-                        valid:false
+                        valid:false,
+                        touched: false
                     },
                     zipCode: {
                         elementType:'input',
@@ -42,7 +45,8 @@ class ContactData extends Component {
                         validation: {
                             required: true
                         },
-                        valid:false
+                        valid:false,
+                        touched: false
                     },
                     country: {
                         elementType:'input',
@@ -54,7 +58,8 @@ class ContactData extends Component {
                         validation: {
                             required: true
                         },
-                        valid:false
+                        valid:false,
+                        touched: false
                     },
                     email: {
                         elementType:'input',
@@ -66,7 +71,8 @@ class ContactData extends Component {
                         validation: {
                             required: true
                         },
-                        valid:false
+                        valid:false,
+                        touched: false
                     },
                     deliveryMethod: {
                         elementType:'select',
@@ -75,9 +81,16 @@ class ContactData extends Component {
                                 {value: 'fastest', display:'Fastest'},
                                 {value: 'cheapest', display:'Cheapest'}]
                         },
-                        value: ''
+                        value: '',
+                        // vazw t validation gia na mi vgazei error
+                        // pio katw st rules required epeidi den eixe validation
+                        // t evgaze false
+                        
+                        validation: {},
+                        valid: true
                     },      
         },
+        formInvalid:false,
         loading: false
     }
 
@@ -106,17 +119,18 @@ class ContactData extends Component {
     }
 
     checkValidity (value, rules){
-        let isValid=false;
+        let isValid=true;
         
         if(rules.required) {
 
             //t trim einai gia t kena stin arxi
-            isValid = value.trim() !=='';
+            isValid = value.trim() !=='' && isValid;
         }
 
         if (rules.minLenght){
-            isValid = value.lenth >= rules.lenth
+            isValid = value.lenth >= rules.lenth  && isValid
         }
+
 
         return isValid;
     }
@@ -138,8 +152,19 @@ class ContactData extends Component {
         };
         updatedFormElement.value = event.target.value;
         updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
+        updatedFormElement.touched = true;
         updatedOrderForm[inputIdentifier] = updatedFormElement;
-        this.setState({orderForm: updatedOrderForm});
+        
+        let formIsValid = true;
+        for (let inputIdentifier in updatedOrderForm){
+            formIsValid = updatedOrderForm[inputIdentifier].valid && formIsValid;
+        }
+
+
+
+        console.log(updatedFormElement);
+        // to aristero formisvalid anaferetai st state to deksi sti metavliti apo panw
+        this.setState({orderForm: updatedOrderForm, formIsValid: formIsValid});
     }
 
     render () {
@@ -159,13 +184,18 @@ class ContactData extends Component {
                     elementType={formElement.config.elementType}
                     elementConfig={formElement.config.elementConfig}
                     value={formElement.config.value}
+                    invalid = {!formElement.config.valid}
+                    shouldValidate={formElement.config.validation}
+                    touched = {formElement.config.touched}
                     changed ={(event) => this.inputChangedHandler(event,formElement.id)}/> 
                     // to kanw anonymous funct gia na mporesw na perasw arguments st inputChanged
                     //opou id == zipcode street klp
                     // to config to pairnei apo t loop epanw gia na perasei ta stoixeio apo to state
                 ))}
                 
-                <Button btnType="Success" >ORDER</Button>
+                {/* //prosoxi epeidi exw diko m buttot to disabled de leitourgei
+                //opote prepei n t ftiaksw st Button */}
+                <Button btnType="Success" disabled = {!this.state.formInvalid} >ORDER</Button>
             </form>
         );
         if ( this.state.loading ) {

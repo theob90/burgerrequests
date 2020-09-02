@@ -6,23 +6,28 @@ const input  = (props) => {
        
 
     let inputElement=null;
+    const inputClasses = [classes.InputElement];
 
+
+    if (props.invalid && props.shouldValidate && props.touched){
+        inputClasses.push(classes.Invalid);
+    }
     // elementType apo to ContactData
     switch (props.elementType) {
-        case ('input '):
-            inputElement = <input className={classes.InputElement}
+        case ('input'):
+            inputElement = <input className={inputClasses.join (' ')}
               {...props.elementConfig}
                value={props.value} onChange={props.changed}/>;
             break;
         case('textarea'):
-        inputElement = <textarea className={classes.InputElement}
+        inputElement = <textarea className={inputClasses}
          {...props.elementConfig}
           value={props.value} onChange={props.changed} />;
         break;
         case( 'select'):
 
         inputElement = <select 
-        className={classes.InputElement}
+        className={inputClasses}
         value={props.value}
             onChange={props.changed}>
             {props.elementConfig.options.map(option =>(
